@@ -12,7 +12,10 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -23,7 +26,13 @@ public class ChatThread extends Thread {
     int ticket = 0;
     DatagramSocket sock;
     DatagramPacket packet;
-    byte[] buf = null;
+    byte[] buf = new byte[256];;
+    Boolean con = true;
+    String name = null;
+    String message;
+    BufferedReader stdIn  = new BufferedReader(
+                                new InputStreamReader(System.in));
+   
     public ChatThread(DatagramSocket sock,DatagramPacket pack, int ticket) {
         this.sock = sock;
         this.packet = pack;
@@ -31,20 +40,54 @@ public class ChatThread extends Thread {
         buf = new byte[256];
 
     }   
-    public void run() {
-        PrintWriter    out = null;
-        BufferedReader in  = null;       
 
-        BufferedReader stdIn  = new BufferedReader(
-                                new InputStreamReader(System.in)); 
-        try { 
-           
-            packet = new DatagramPacket(buf, buf.length);
-            sock.receive(packet);         // receive request
-            boolean going = true;
-            
-            
-            while (going) {
+    ChatThread(DatagramPacket pct, DatagramSocket sck) {
+        this.packet = pct;
+        this.sock = sck;
+        
+    }
+    
+    
+    public void run() {
+        System.out.println("Thread Started");
+        while(name == null){
+        String request = new String(packet.getData());
+        System.out.println("Recieving Name From " + request);
+        name = request;
+        request = null;
+        }
+        System.out.println("Connected");
+        while(con){
+          
+
+                InetAddress address = packet.getAddress();
+                int         port    = packet.getPort();
+                System.out.println("Port Number: " + port);
+                packet = new DatagramPacket(buf, buf.length, address, port);
+                String response = new String(packet.getData());
+                 System.out.println(response);  
+                    
+                    
+                    
+                    //   buf = packet.getData();
+               // packet.getData();
+               //System.out.println(packet.getData());
+               //System.out.println(packet.getData());
+
+                  
+              //  System.out.println("recieved");
+             //   String request = new String(packet.getData());
+             //   System.out.println(name + " Said " + request);
+                Delay.skip(10);
+              //  System.out.println("done");
+      
+    
+}
+
+}
+}
+/*
+ *
                 System.out.println("Chat:" + ticket + " waiting for request");
                 sock.receive(packet);
                 String request = new String(packet.getData());
@@ -64,12 +107,6 @@ public class ChatThread extends Thread {
                 
                 System.out.println("Chat: Sending response:" + serverResponse);               
                 out.println(serverResponse);
-            }
-    
-        } catch (IOException e) {
-                e.printStackTrace();
-        }
-    
-}
-
-}
+            } 
+ * */
+ 

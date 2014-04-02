@@ -7,7 +7,8 @@ package chatserver;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-
+//Daryl
+//Server
 public class Main {
     
     public static void main(String[] argc) throws Exception {
@@ -18,13 +19,27 @@ public class Main {
         //Socket          sock = null;
         int             ticket = 0;
         DatagramSocket    socket = new DatagramSocket(4445);
-        DatagramPacket  packet = null;
+        DatagramPacket[] packets = new DatagramPacket[100];
+        ChatThread[] threads = new ChatThread[100];
+        String userName;
+        
+        int numClients = 0;
 
         while (true) {
-            System.out.println("Tcpchat: accepting...");
-            ticket++;
-            ChatThread chatThread = new ChatThread(socket,packet,ticket);
-            chatThread.start();
+            numClients++;
+            buf = new byte[256];
+            System.out.println("Waiting for packet");
+            packets[numClients] = new DatagramPacket(buf, buf.length);
+            System.out.println(packets[numClients]);
+            socket.receive(packets[numClients]);
+            System.out.println(packets[numClients]);
+
+            threads[numClients] = new ChatThread(packets[numClients], socket);
+            threads[numClients].start();
+           // System.out.println("Packet Recieved- Port: " + port);
+
+            
+            
         }
     }
         
